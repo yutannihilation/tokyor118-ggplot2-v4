@@ -1,0 +1,400 @@
+---
+# Quarto options
+title: ggplot2 v4.0 に備えよう
+format:
+  gfm:
+    variant: +yaml_metadata_block
+
+# Slidev options
+theme: default
+background: /background.png
+fonts:
+  sans: Noto Sans JP
+  mono: Fira Code
+  weights: '600,900'
+class: text-center
+drawings:
+  persist: false
+# enable MDC Syntax: https://sli.dev/features/mdc
+mdc: true
+---
+
+```{r}
+#| include: false
+knitr::opts_knit$set(
+  base.dir = here::here("public/")
+)
+
+knitr::opts_chunk$set(
+  fig.path = "plot/",
+  collapse = TRUE,
+  comment = "#>",
+  dev = "ragg_png"
+)
+
+orig_hook <- knitr::knit_hooks$get("plot")
+
+knitr::knit_hooks$set(
+  plot = function(x, options) {
+    x <- orig_hook(x, options)
+    gsub("![](plot/", "![](/plot/", x, fixed = TRUE)
+  }
+)
+
+library(ggplot2)
+library(scales)
+```
+
+# ggplot2<br/>v4.0<br/>に備えよう
+
+2025/06/21 Tokyo.R#118
+
+@yutannihilation
+
+```{=html}
+---
+layout: image-right
+image: "/icon.jpg"
+---
+```
+
+# ドーモ！
+
+## 名前:
+
+湯谷啓明
+
+- MIERUNE で GIS エンジニア見習い
+- ggplot2 のメンテナ（いちおう）
+
+---
+
+# 宣伝：うちのCTOの本が今日発売
+
+<Tweet id="1928764558921105630" scale=1.5 />
+
+```{=html}
+---
+layout: two-cols
+---
+```
+
+# ggplot2
+
+- グラフを描画するためのフレームワーク
+- 一貫性のある文法で、細かい調整がしやすい
+
+::right::
+
+![](https://ggplot2.tidyverse.org/logo.png)
+
+
+---
+
+# ggplot2 v4.0
+
+<v-clicks>
+
+- たぶん来月あたりリリース
+- 100年に1度の出来と言われた2024年を超す21世紀最高の出来栄え（ボジョレーヌーボー風）
+- `theme()` まわりが大幅強化
+
+</v-clicks>
+
+---
+
+# 今日話すこと
+
+- `theme(geom = )`
+- `ink` と `paper`
+- `theme(palette = )`
+
+---
+
+# これまで
+
+- だいたいのスタイルは `theme()` で設定できる
+- と言いつつ「ただし、」が多かった
+
+---
+
+# 「ただし」の例
+
+- `colour` や `fill` の scale は `options()`
+  ```r
+  options(
+    ggplot2.continuous.colour = "viridis",
+    ggplot2.continuous.fill = "viridis"
+  )
+  ```
+- `Geom` の点や線の大きさ、色などは `update_geom_defaults()`
+  ```r
+  update_geom_defaults("point",
+    aes(color = "red")
+  )
+  ```
+
+---
+
+# 「ただし」の例
+
+- `theme(text = )` の指定は `geom_text()` などには引き継がれない
+- `theme(text = )` のサイズは `geom_text()` のサイズ指定と単位が違う
+
+---
+
+# `theme(geom = )`
+
+- `element_geom()` でデフォルトのスタイルを指定できるようになった
+
+```{r}
+#| label: element_geom
+#| output: false
+p <- ggplot(mpg, aes(displ, hwy)) + geom_point()
+
+p2 <- p +
+  theme(
+    geom = element_geom(
+      pointshape = "square",
+      pointsize = 8
+    )
+  )
+```
+
+---
+
+```{r}
+#| echo: false
+patchwork::wrap_plots(
+  p + ggtitle("original"),
+  p2 + ggtitle("+ theme(...)")
+)
+```
+
+---
+
+# `element_geom(fontsize = )`
+
+- サイズの単位がポイントなので、サイズを揃えるのが簡単になった。
+
+```{r}
+#| include: false
+set.seed(10)
+d <- data.frame(
+  Foo = runif(30),
+  Bar = runif(30),
+  label = rep(c("Foo", "Bar"), 15)
+)
+```
+
+```{r}
+#| output: false
+ggplot(d, aes(Foo, Bar, label = label)) +
+  geom_text() +
+  labs(title = "Foo") +
+  theme(
+    plot.title = element_text(size = 30),
+    axis.title = element_text(size = 30),
+    axis.text = element_text(size = 30),
+    geom = element_geom(fontsize = 30)
+  )
+```
+
+---
+
+```{r}
+#| echo: false
+ggplot(d, aes(Foo, Bar, label = label)) +
+  geom_text() +
+  labs(title = "Foo") +
+  theme(
+    plot.title = element_text(size = 30),
+    axis.title = element_text(size = 30),
+    axis.text = element_text(size = 30),
+    geom = element_geom(fontsize = 30)
+  )
+```
+
+---
+
+# `ink` と `paper`
+
+- `ink`: メインの色
+- `paper`: 背景の色
+- `accent`: 強調の色
+
+---
+
+# （元のプロット）
+
+```{r}
+#| out-height: 80%
+ggplot(mpg, aes(class)) + geom_bar()
+```
+
+---
+
+# `ink` が青
+
+```{r}
+#| include: false
+p <- ggplot(mpg, aes(class)) + geom_bar()
+```
+
+```{r}
+#| out-height: 80%
+p + theme_gray(ink = "blue")
+```
+
+---
+
+# `paper` が赤
+
+```{r}
+#| out-height: 80%
+p + theme_gray(paper = "red")
+```
+
+
+---
+
+# `ink` が青で `paper` が赤
+
+```{r}
+#| out-height: 80%
+p + theme_gray(ink = "blue", paper = "red")
+```
+
+---
+
+# `ink` と `paper`
+
+- `ink` はまあわかる
+- `paper` が入ってくると難しい...
+- `accent` はもう謎
+
+---
+
+# `from_theme()`
+
+- なぜこの指定が動くのかというと `from_theme()` が default aes に設定されているから
+
+```{r}
+GeomPoint$default_aes
+```
+
+---
+
+# `from_theme()`
+
+- つまり、Geom 側の実装に寄るので、拡張パッケージ側の対応はまだこれから。
+
+---
+
+# `theme(palette = )`
+
+- `scales_colour_*()` とか `scales_fill_*()` を使わなくても、`theme()` からカラーパレットを指定できるようになった！
+- scales パッケージのパレットが指定できる
+
+```{r}
+#| include: false
+p <- ggplot(mpg, aes(displ, hwy)) +
+  geom_point(aes(colour = class), size = 10)
+```
+
+---
+
+# パレット名を指定
+
+```{r}
+#| output: false
+p +
+  theme(
+    palette.colour.discrete = "mint"
+  )
+```
+
+---
+
+```{r}
+#| echo: false
+p +
+  theme(
+    palette.colour.discrete = "mint"
+  )
+```
+
+---
+
+# `scales::pal_*()` を指定
+
+```{r}
+#| output: false
+pal <- pal_viridis(option = "F")
+
+p +
+  theme(
+    palette.colour.discrete = pal
+  )
+```
+
+---
+
+```{r}
+#| echo: false
+p +
+  theme(
+    palette.colour.discrete = pal_viridis(option = "F")
+  )
+```
+
+---
+
+# 自作のパレットを指定
+
+* 必要なのは discrete なパレットだが、continuous にしておくと補間してくれる
+
+```{r}
+#| output: false
+my_pal <- as_continuous_pal(
+  c("red", "black", "yellow")
+)
+
+p +
+  theme(
+    palette.colour.discrete = my_pal
+  )
+```
+
+---
+
+```{r}
+#| echo: false
+my_pal <- as_continuous_pal(c("red", "black", "yellow"))
+
+p +
+  theme(
+    palette.colour.discrete = my_pal
+  )
+```
+
+
+---
+
+# 補足
+
+- palette の管理は scales v1.4.0 の新機能
+- palette 一覧は、`scales:::palette_names()` で確認できる（他にいい方法ある...？）
+
+---
+
+```{r}
+scales:::palette_names()
+```
+
+---
+
+# まとめ
+
+- `theme()` まわりが大幅強化されるので楽しみ
+- いっぱい変更があるので、リリースからしばらくはトラブルあるかも
