@@ -1,8 +1,8 @@
-# SappoRo.R#12
+# Tokyo.R#118
 
 ## Event
 
-<https://sapporor.connpass.com/event/338814/>
+<https://tokyor.connpass.com/event/357734/>
 
 ## Build
 
