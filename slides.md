@@ -1,5 +1,6 @@
 ---
 title: ggplot2 v4.0 に備えよう
+transition: none
 format:
   gfm:
     variant: +yaml_metadata_block
@@ -233,7 +234,7 @@ GeomPoint$default_aes
 # `from_theme()`
 
 - つまり、Geom
-  側の実装に寄るので、拡張パッケージ側の対応はまだこれから。
+  側の実装によるので、拡張パッケージ側の対応はまだこれから。
 
 ------------------------------------------------------------------------
 

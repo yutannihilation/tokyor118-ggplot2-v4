@@ -4,6 +4,7 @@
 
     li {
         @apply py-[0.4rem] leading-tight;
+        list-style-type: disc;
     }
 
     h1,
