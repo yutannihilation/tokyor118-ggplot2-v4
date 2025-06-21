@@ -34,14 +34,8 @@ image: "/icon.jpg"
 
 湯谷啓明
 
-- MIERUNE で GIS エンジニア見習い
+- 株式会社 MIERUNE で GIS エンジニア見習い
 - ggplot2 のメンテナ（いちおう）
-
-------------------------------------------------------------------------
-
-# 宣伝：うちのCTOの本が今日発売
-
-<Tweet id="1928764558921105630" scale=1.5 />
 
 ---
 layout: two-cols
@@ -51,6 +45,7 @@ layout: two-cols
 
 - グラフを描画するためのフレームワーク
 - 一貫性のある文法で、細かい調整がしやすい
+- 今年で18歳！
 
 ::right::
 
@@ -240,7 +235,7 @@ GeomPoint$default_aes
 
 # `theme(palette = )`
 
-- `scales_colour_*()` とか `scales_fill_*()` を使わなくても、`theme()`
+- `scale_colour_*()` とか `scale_fill_*()` を使わなくても、`theme()`
   からカラーパレットを指定できるようになった！
 - scales パッケージのパレットが指定できる
 
